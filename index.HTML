@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VietQR Banking 247</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: radial-gradient(circle at top, #0a0f18, #000);
+      --card-bg: rgba(20,25,35,0.95);
+      --text: #e0e6ed;
+      --accent: #3b82f6;
+      --green: #16a34a;
+      --yellow: #facc15;
+      --red: #dc2626;
+      --input-bg: #111827;
+      --input-border: #374151;
+      --input-text: #f1f5f9;
+      --qr-border: orange;
+    }
+    body.light {
+      --bg: #f0f3f8;
+      --card-bg: #ffffff;
+      --text: #111827;
+      --accent: #3b82f6;
+      --green: #16a34a;
+      --yellow: #facc15;
+      --red: #dc2626;
+      --input-bg: #f1f5f9;
+      --input-border: #d1d5db;
+      --input-text: #111827;
+      --qr-border: #008000;
+    }
+
+    * { box-sizing: border-box; margin:0; padding:0; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .container {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 30px 25px;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: 0 0 25px rgba(0,123,255,0.3);
+      position: relative;
+    }
+
+    h2 {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text);
+      text-shadow: 0 0 8px #fff, 0 0 12px var(--accent);
+      animation: glow 2s infinite alternate;
+      margin-bottom: 25px;
+    }
+
+    #toggleMode {
+      padding: 6px 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      background: var(--card-bg);
+      color: var(--text);
+      z-index: 10;
+      transition: 0.3s;
+    }
+    #toggleMode:hover {
+      transform: scale(1.1);
+      box-shadow:0 0 8px var(--accent);
+    }
+
+    @keyframes glow {
+      from { text-shadow:0 0 6px #fff,0 0 10px var(--accent); opacity:1;}
+      to { text-shadow:0 0 12px #fff,0 0 20px #60a5fa; opacity:0.85;}
+    }
+
+    label { display: block; margin-bottom:6px; font-weight:500; }
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--input-border);
+      background: var(--input-bg);
+      color: var(--input-text);
+      font-size: 15px;
+      margin-bottom:15px;
+      transition: 0.3s, box-shadow 0.3s;
+      text-transform: uppercase;
+    }
+
+    input:focus, select:focus {
+      border-width: 2px;
+      outline: none;
+    }
+    body.light input:focus, body.light select:focus {
+      border-color: orange;
+      box-shadow: 0 0 10px orange;
+    }
+    body:not(.light) input:focus, body:not(.light) select:focus {
+      border-color: #000;
+      box-shadow: 0 0 10px #000;
+    }
+
+    .generate-btn {
+      background: var(--green);
+      width:100%;
+      padding:12px;
+      border-radius:12px;
+      border:none;
+      font-weight:600;
+      font-size:15px;
+      color:white;
+      cursor:pointer;
+      transition:0.3s, box-shadow 0.3s;
+    }
+    .generate-btn:hover {
+      box-shadow:0 0 12px var(--green),0 0 20px #22c55e;
+      transform:scale(1.03);
+    }
+
+    #qrBox { display:none; margin-top:20px; text-align:center; }
+    #qrBox img {
+      width:240px;
+      border-radius:10px;
+      border:3px solid var(--qr-border);
+      background:white;
+      box-shadow:0 0 12px rgba(0,0,0,0.3);
+      transition:border-color 0.3s;
+    }
+
+    .actionBtns {
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      margin-top:12px;
+    }
+    .actionBtns button {
+      flex:1;
+      padding:10px;
+      font-size:14px;
+      border-radius:10px;
+      font-weight:600;
+      transition:0.3s, box-shadow 0.3s;
+    }
+    .btn-yellow {
+      background: var(--yellow);
+      color:#111;
+    }
+    .btn-yellow:hover {
+      box-shadow:0 0 12px var(--yellow),0 0 20px #fcd34d;
+      transform:scale(1.05);
+    }
+    .btn-red {
+      background: var(--red);
+      color:white;
+    }
+    .btn-red:hover {
+      box-shadow:0 0 12px var(--red),0 0 20px #ef4444;
+      transform:scale(1.05);
+    }
+
+    .copy-btn {
+      background: orange;
+      color: #111;
+      width:100%;
+      padding:10px;
+      margin-bottom:15px;
+      border:none;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:600;
+      transition:0.3s, box-shadow 0.3s, transform 0.3s;
+    }
+    .copy-btn:hover {
+      box-shadow:0 0 12px orange,0 0 20px rgba(255,165,0,0.4);
+      transform:scale(1.05);
+    }
+
+    .socials-box {
+      margin-top: 20px;
+      padding: 12px 20px;
+      background: var(--card-bg);
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      display: flex;
+      justify-content: center;
+    }
+
+    .socials { display: flex; gap: 15px; }
+    .socials img {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+    }
+    .socials img:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    small {
+      display:block;
+      text-align:center;
+      color:#64748b;
+      margin-top:15px;
+      font-size:13px;
+    }
+    small a { color:#008000; text-decoration:none; }
+
+    /* ✅ Sửa logo ngân hàng */
+    .bank-logo-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    #bankLogo {
+      display: none;
+      max-width: 140px;
+      max-height: 60px;
+      margin-top: 12px;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease;
+    }
+    #bankLogo:hover {
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>
+      <span>⚡ PHẠM VĂN HÒA PRIORITY BUILD VIETQR BANKING 247 ⚡</span>
+      <button id="toggleMode">🌙</button>
+    </h2>
+
+    <label>Ngân hàng</label>
+    <select id="bank">
+      <option value="">-- Chọn ngân hàng --</option>
+    </select>
+
+    <div class="bank-logo-container">
+      <img id="bankLogo" src="" alt="Logo ngân hàng">
+    </div>
+
+    <label>Số tài khoản</label>
+    <input type="text" id="account" placeholder="VD: 123456789">
+    <button class="copy-btn" onclick="copyAccount()">📋 Sao chép số tài khoản</button>
+
+    <label>Tên tài khoản</label>
+    <input type="text" id="accountName" placeholder="VD: NGUYEN VAN A">
+
+    <label>Số tiền (tùy chọn)</label>
+    <input type="text" id="amount" placeholder="VD: 50.000">
+
+    <label>Nội dung chuyển tiền</label>
+    <input type="text" id="memo" placeholder="VD: THANH TOAN DON HANG">
+
+    <button class="generate-btn" onclick="generateQR()">⚡ TẠO MÃ QR ⚡</button>
+
+    <div id="qrBox">
+      <img id="qrImage" src="" alt="QR">
+      <div class="actionBtns">
+        <button class="btn-yellow" onclick="downloadQR()">💾 Tải QR</button>
+        <button class="btn-red" onclick="resetForm()">🔄 Reset</button>
+      </div>
+    </div>
+
+    <small>
+      © 2025 VietQR Creator — API VietQR.io<br>
+      👨‍💻 Tác giả: <b>PHẠM VĂN HÒA PRIORITY</b><br>
+      📧 Email: <a href="mailto:phamvanhoaapi2002@gmail.com">phamvanhoaapi2002@gmail.com</a><br>
+      ☎️ SĐT: <a href="tel:0869719516">0869 719 516</a>
+    </small>
+
+    <div class="socials-box">
+      <div class="socials">
+        <a href="https://www.facebook.com/laptrinhvienPHAMVANHOApriority" target="_blank">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/2021_Facebook_icon.svg/1200px-2021_Facebook_icon.svg.png" alt="Facebook">
+        </a>
+        <a href="https://m.me/laptrinhvienPHAMVANHOApriority" target="_blank">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Facebook_Messenger_logo_2013.svg/2030px-Facebook_Messenger_logo_2013.svg.png" alt="Messenger">
+        </a>
+        <a href="https://t.me/phamvanhoaapi2002" target="_blank">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Telegram_2019_Logo.svg/2048px-Telegram_2019_Logo.svg.png" alt="Telegram">
+        </a>
+        <a href="https://wa.me/84869719516" target="_blank">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/2044px-WhatsApp.svg.png" alt="WhatsApp">
+        </a>
+        <a href="https://www.youtube.com/@PHAMVANHOAAPI2002" target="_blank">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/512px-YouTube_full-color_icon_%282017%29.svg.png" alt="YouTube">
+        </a>
+        <a href="https://zalo.me/84969719516" target="_blank">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Icon_of_Zalo.svg/2048px-Icon_of_Zalo.svg.png" alt="Zalo">
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let bankData = [];
+
+    async function loadBanks() {
+      try {
+        const res = await fetch('https://api.vietqr.io/v2/banks');
+        if (!res.ok) throw new Error('Không lấy được danh sách ngân hàng: ' + res.status);
+        const data = await res.json();
+        bankData = (data.data || []).filter(b => b.bin && b.shortName);
+        const sel = document.getElementById('bank');
+        bankData.forEach(b => {
+          const opt = document.createElement('option');
+          opt.value = b.bin;
+          opt.textContent = `${b.shortName} (${b.bin})`;
+          opt.dataset.logo = b.logo || "";
+          sel.appendChild(opt);
+        });
+      } catch (err) {
+        console.error(err);
+        alert("Không tải được danh sách ngân hàng!");
+      }
+    }
+
+    function showBankLogo() {
+      const sel = document.getElementById('bank');
+      const option = sel.selectedOptions[0];
+      if (!option) return;
+      const logo = option.dataset.logo;
+      const img = document.getElementById('bankLogo');
+      if (logo) {
+        img.src = logo;
+        img.style.display = 'inline-block';
+      } else {
+        // ảnh placeholder khi không có logo
+        img.src = "https://upload.wikimedia.org/wikipedia/commons/3/3b/Placeholder_view_vector.svg";
+        img.style.display = 'inline-block';
+      }
+    }
+
+    // format: hiển thị có dấu phân cách; lưu giá trị thô vào dataset.raw
+    function formatAmount(input) {
+      // chỉ giữ ký tự số
+      let digits = String(input.value).replace(/[^\d]/g, '');
+      if (!digits) {
+        input.value = "";
+        delete input.dataset.raw;
+        return;
+      }
+      input.dataset.raw = digits; // lưu giá trị thô (chuỗi chỉ gồm chữ số)
+      // hiển thị dạng phân cách theo locale VN (ví dụ: 1.000.000)
+      input.value = Number(digits).toLocaleString('vi-VN');
+    }
+
+    // parseAmount: nhận input element hoặc chuỗi, trả về số nguyên hoặc 0
+    function parseAmount(source) {
+      if (!source) return 0;
+      if (typeof source === 'object' && source.dataset) {
+        const raw = source.dataset.raw;
+        return raw ? parseInt(raw, 10) : 0;
+      }
+      // nếu truyền chuỗi, loại bỏ tất cả ký tự không phải số
+      const digits = String(source).replace(/[^\d]/g, '');
+      return digits ? parseInt(digits, 10) : 0;
+    }
+
+    async function generateQR() {
+      const bank = document.getElementById("bank").value;
+      const account = document.getElementById("account").value.trim();
+      const name = document.getElementById("accountName").value.trim();
+      const amountInput = document.getElementById("amount");
+      const memo = document.getElementById("memo").value.trim();
+
+      if (!bank || !account || !name) {
+        alert("⚠️ Vui lòng nhập đầy đủ ngân hàng, số tài khoản và tên tài khoản!");
+        return;
+      }
+
+      // lấy giá trị thô từ dataset.raw để tránh lỗi do format
+      const amount = amountInput.dataset.raw ? parseInt(amountInput.dataset.raw, 10) : undefined;
+
+      const body = {
+        accountNo: account,
+        accountName: name,
+        acqId: bank,
+        addInfo: memo || "",
+        format: "base64"
+      };
+      if (typeof amount === 'number' && !isNaN(amount) && amount > 0) {
+        body.amount = amount;
+      }
+
+      const btn = document.querySelector(".generate-btn");
+      const prevText = btn.textContent;
+      btn.textContent = "⏳ Đang tạo...";
+      btn.disabled = true;
+      document.getElementById("qrBox").style.display = "none";
+
+      try {
+        const res = await fetch("https://api.vietqr.io/v2/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body)
+        });
+
+        if (!res.ok) {
+          // lấy nội dung lỗi nếu có
+          let errText = `Lỗi API: ${res.status}`;
+          try { const t = await res.text(); if (t) errText += ' — ' + t; } catch(e){}
+          throw new Error(errText);
+        }
+
+        const result = await res.json();
+        if (result?.data) {
+          const qrBase64 = result.data.qrDataURL || (result.data.qrCode ? "data:image/png;base64," + result.data.qrCode : "");
+          if (!qrBase64) throw new Error("API trả về dữ liệu QR không hợp lệ");
+          document.getElementById("qrImage").src = qrBase64;
+          document.getElementById("qrBox").style.display = "block";
+        } else {
+          console.error(result);
+          alert("❌ Không tạo được mã QR!");
+        }
+      } catch (e) {
+        console.error(e);
+        alert("Lỗi khi gọi API VietQR!\n" + (e.message || ""));
+      } finally {
+        btn.textContent = prevText || "🚀 TẠO MÃ QR";
+        btn.disabled = false;
+      }
+    }
+
+    function downloadQR() {
+      const qr = document.getElementById("qrImage");
+      if (!qr.src) {
+        alert("Chưa có mã QR để tải!");
+        return;
+      }
+      const link = document.createElement('a');
+      link.href = qr.src;
+      link.download = "vietqr.png";
+      link.click();
+    }
+
+    function resetForm() {
+      ["account", "accountName", "amount", "memo"].forEach(id => {
+        const el = document.getElementById(id);
+        el.value = "";
+        if (el.dataset) delete el.dataset.raw;
+      });
+      document.getElementById("qrBox").style.display = "none";
+      document.getElementById('bank').selectedIndex = 0;
+      const img = document.getElementById('bankLogo');
+      img.style.display = 'none';
+    }
+
+    function copyAccount() {
+      const acc = document.getElementById("account").value.trim();
+      if (!acc) {
+        alert("⚠️ Chưa có số tài khoản để sao chép!");
+        return;
+      }
+      navigator.clipboard.writeText(acc).then(() => {
+        alert("✅ Đã sao chép số tài khoản!");
+      }).catch(() => {
+        alert("❌ Không thể sao chép. Vui lòng sao chép thủ công.");
+      });
+    }
+
+    const toggleBtn = document.getElementById("toggleMode");
+    toggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("light");
+      toggleBtn.textContent = document.body.classList.contains("light") ? "☀️" : "🌙";
+      localStorage.setItem('theme', document.body.classList.contains("light") ? 'light' : 'dark');
+    });
+
+    // khôi phục theme nếu có
+    if (localStorage.getItem('theme') === 'light') {
+      document.body.classList.add('light');
+      toggleBtn.textContent = '☀️';
+    }
+
+    document.getElementById("bank").addEventListener("change", showBankLogo);
+    document.getElementById("amount").addEventListener("input", (e) => formatAmount(e.target));
+
+    loadBanks();
+  </script>
+</body>
+</html>
